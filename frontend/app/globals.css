@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --color-primary: #f97316;
+  --color-primary-dark: #ea580c;
+  --color-navy: #0f1e33;
+  --color-navy-2: #16283f;
+  --color-peach: #fff3e8;
+  --color-peach-2: #fdebd7;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--font-inter), system-ui, sans-serif; background: #fffaf5; color: #0f1e33; }
+
+.card {
+  background: #fff;
+  border: 1px solid rgba(15, 30, 51, 0.06);
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px -18px rgba(15, 30, 51, 0.18);
+}

@@ -1,0 +1,18 @@
+# Dependencies / build output
+node_modules/
+.next/
+out/
+*.log
+
+# Python
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+
+# Local env / secrets
+.env
+.env.local
+
+# Runtime data
+data/

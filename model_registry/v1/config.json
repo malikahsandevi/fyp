@@ -1,0 +1,11 @@
+{
+  "architecture": "densenet121",
+  "checkpoint": "model.pth",
+  "input_size": [224, 224],
+  "color_mode": "RGB",
+  "resize_interpolation": "bilinear",
+  "mean": [0.485, 0.456, 0.406],
+  "std": [0.229, 0.224, 0.225],
+  "threshold": 0.5,
+  "class_thresholds": {}
+}
