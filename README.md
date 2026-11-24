@@ -2,6 +2,56 @@
 
 Research/demo prototype. **Not for clinical diagnosis.**
 
+## Prototype Demo — How To Run (supervisor demo)
+
+This package is the working prototype phase of the FYP. It runs end-to-end
+with NO database and NO login: **database and authentication are intentionally
+NOT part of this prototype phase** — they are held for a later phase, per the
+project plan. Everything below works exactly as the proposal's 7-step pipeline
+describes.
+
+**1. Start the backend** (terminal 1):
+```bash
+cd backend
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --port 8000
+# API docs: http://localhost:8000/docs   health: http://localhost:8000/health
+```
+
+**2. Start the frontend** (terminal 2):
+```bash
+cd frontend
+cp .env.local.example .env.local   # contains NEXT_PUBLIC_API_URL=http://localhost:8000
+npm install
+npm run dev                        # http://localhost:3000
+```
+
+**3. Demo script (what to show):**
+1. Open **http://localhost:3000** — landing page with the upload zone.
+2. Upload `backend/tests/sample_xray.png` (or any chest X-ray PNG/JPEG) in
+   **Try It Now**. The image is preprocessed (noise reduction + CLAHE contrast
+   adjustment + resize + normalize), analyzed by the DenseNet121 model, and
+   the Result page opens automatically.
+3. On **Result**: read the verdict and confidence, and the score bars for all
+   14 findings.
+4. Click the **Cardiomegaly** row — the **Grad-CAM** heatmap for that finding
+   overlays the X-ray (explainable AI: which region drove the prediction).
+5. Scroll to the **report**: the flagged finding is explained with context
+   retrieved from the medical knowledge base (RAG), quoted with its citation
+   and similarity score. Findings with no reliable retrieved context are
+   suppressed and marked "manual clinical evaluation required" instead of
+   being invented.
+6. Click **Download Report** to save the report as a text file.
+7. Open **Models & Knowledge** (top nav): model **v1 (DenseNet121)** is
+   active, the knowledge base shows **15 documents** indexed; **Re-index**
+   reloads the knowledge base without restarting.
+8. Open **History** (top nav): the analysis you just ran is listed and can be
+   reopened. (Prototype scope: history lives in this browser only — the
+   database phase comes later.)
+
+Proposal documents (proposal + presentation) are in `docs/`.
+
 ```
 medvision-ai-final/
 ├─ model_registry/      <- MODELS (alag attach hote hain, backend code se bahar)
@@ -13,7 +63,8 @@ medvision-ai-final/
 │   ├─ app/generation/     report generator (template offline | any OpenAI-compatible LLM)
 │   ├─ knowledge_base/     *.md files (Hassan yahan verified literature dalega)
 │   └─ tests/
-└─ frontend/            <- Next.js (App Router, TypeScript, Tailwind) — NEW design
+├─ frontend/            <- Next.js (App Router, TypeScript, Tailwind) — NEW design
+└─ docs/                <- FYP proposal document + proposal presentation
 ```
 
 ## Frontend (new design)
@@ -70,7 +121,7 @@ npm run dev                 # http://localhost:3000
 Tests: `cd backend && pip install -r requirements-dev.txt && pytest`
 
 ## Pipeline (POST /api/v1/analyze)
-image -> preprocess -> CNN scores -> flagged findings -> knowledge retrieval (cosine similarity >= `RETRIEVAL_MIN_SCORE`) -> report -> JSON.
+image -> preprocess (noise reduction + CLAHE contrast adjustment -> resize 224x224 -> normalize; toggle `PREPROCESS_ENHANCE=false` to skip enhancement) -> CNN scores -> flagged findings -> knowledge retrieval (cosine similarity >= `RETRIEVAL_MIN_SCORE`) -> report -> JSON.
 Agar kisi finding ke liye threshold se upar koi context nahi mila to text suppress hota hai aur "manual evaluation required" dikhta hai.
 Grad-CAM: `POST /api/v1/gradcam?label=...` (frontend mein score row click karne par).
 
@@ -109,5 +160,5 @@ knowledge-base files, re-index without restarting from the frontend's
 Admin endpoints ke liye `ADMIN_TOKEN` set karein (header `X-Admin-Token`).
 
 ## Abhi prototype mein nahi
-Authentication/users, database (MongoDB history), deployment/Docker, preprocessing (CLAHE/denoise) — proposal ke mutabiq aglay phases mein.
+Authentication/users, database (MongoDB history), deployment/Docker — proposal ke mutabiq aglay phases mein. (Preprocessing CLAHE/denoise ab prototype mein shamil hai.)
 Training-parity caveat: 1024->224 resize training cache se match karna baqi hai (purani README dekhein).

@@ -54,6 +54,11 @@ class Settings:
     llm_api_key: str = field(default_factory=lambda: os.environ.get("LLM_API_KEY", ""))
     llm_model: str = field(default_factory=lambda: os.environ.get("LLM_MODEL", "gpt-4o-mini"))
 
+    # Preprocessing (proposal step 2): noise reduction + CLAHE contrast
+    # enhancement before resize/normalize. On by default; set
+    # PREPROCESS_ENHANCE=false to use plain resize + normalize only.
+    preprocess_enhance: bool = field(default_factory=lambda: _bool("PREPROCESS_ENHANCE", True))
+
     # Upload limits
     max_file_bytes: int = 10 * 1024 * 1024
     max_image_pixels: int = 20_000_000
